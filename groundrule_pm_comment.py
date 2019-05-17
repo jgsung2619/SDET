@@ -23,11 +23,22 @@ def overdueComments(tc, assignee):
     """
     jira.add_comment(tc.id, comments, visibility=None, is_internal=False)
 
+def tcComments(issue, assignee):
+
+    comments = "[~" + assignee + """] Owner님. 본 TestCase 활용하시어 본인의 EPIC/Story검증이 필요합니다.
+    [RMS 7161] Smart STB Controller(SSC) webOS 4.5 적용 Delivery가 다음주 금요일(5/24)로 예정되어 있습니다.
+    하위 EPIC과 Story의 TC 검증 결과 없이는 Initiative Delivery가 불가능하오니 Test Case 작성하시어 개발자 검증 진행 부탁드립니다.
+    만약 검증이 불필요한 Story이거나 기존 TC로 검증이 가능한 경우라면 회신 부탁드립니다.
+    EPIC TC로 Story검증이 모두 가능한 건지요?
+
+    CC: [~jinyoung76.choi]책임님"""
+    jira.add_comment(issue.id, comments, visibility=None, is_internal=False)
+
 
 if __name__ == "__main__":
     # jira Handle open
     jira = JIRA(DevTracker, basic_auth=(ID, PASSWORD))
-    issue_search_convert = jira.search_issues("key=TVPLAT-19005", maxResults=100)
+    issue_search_convert = jira.search_issues("key in (TVDEVTC-11349,TVDEVTC-7197,TVDEVTC-7198,TVDEVTC-7199,TVDEVTC-7200)", maxResults=100)
     print("### 관리대상 이니셔티브 ###")
     # Create New Jira Tickets
     for key in issue_search_convert:
@@ -36,4 +47,4 @@ if __name__ == "__main__":
         issue_summary = issue.fields.summary
         issue_assignee = issue.fields.assignee.name
         print('{} : {} ({})'.format(issue_key, issue_summary, issue_assignee))
-        overdueComments(issue, issue_assignee)
+        tcComments(issue, issue_assignee)
