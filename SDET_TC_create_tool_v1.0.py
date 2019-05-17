@@ -58,9 +58,15 @@ def addLink(tc, target) :
 
 def creatJira(issue, epicTC, storyTC):
     # issue information
+    issue_key = issue.key
     issue_type = issue.fields.issuetype.name
     issue_summary = issue.fields.summary
-    issue_assignee = issue.fields.assignee.name
+    issue_assignee = ""
+    try:
+        issue_assignee = issue.fields.assignee.name
+    except:
+        print(issue_key+"에 Owner가 없습니다. 해당하는 Initiative Owner에게 담당자 지정 요청을 해야하며, 검증대상 분류에서 제외시켜 주세요")
+        break
     TC_summary = ""
     description = ""
     print('{}: {} ({})'.format(issue_type, issue_summary, issue_assignee))
@@ -106,7 +112,7 @@ if __name__ == "__main__":
     jira = JIRA(DevTracker, basic_auth=(ID, PASSWORD))
     epicSampleTC = jira.issue("TVDEVTC-3738", fields='description')
     storySampleTC = jira.issue("TVDEVTC-2574", fields='description')
-
+    #filter=48947 = 분류완료된 EPIC, Story List
     issue_search_convert = jira.search_issues("filter=48947", maxResults=1000)
     print("### 검증 대상 EPIC & STORY ###")
     # Create New Jira Tickets
